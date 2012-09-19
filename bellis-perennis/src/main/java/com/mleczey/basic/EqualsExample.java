@@ -51,7 +51,7 @@ public class EqualsExample {
         });
   }
   
-  class Rabbit {
+  public static class Rabbit {
     private String name;
     
     public Rabbit(String name) {
