@@ -19,8 +19,8 @@ public class EnvironmentVariablesExample {
     
     StringBuilder environmentVairables = new StringBuilder("\n");
     Map<String, String> variables = System.getenv();
-    for (String key : variables.keySet()) {
-      environmentVairables.append(key).append(": ").append(variables.get(key)).append("\n");
+    for (Map.Entry<String, String> entry : variables.entrySet()) {
+      environmentVairables.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
     }
     logger.log(Level.INFO, "{0}", environmentVairables);
   }
