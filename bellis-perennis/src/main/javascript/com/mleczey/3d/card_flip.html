@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Card flip</title>
+    <style type="text/css">
+body {
+  margin: 0px;
+  padding: 0px;
+  
+  font-family: Arial, sans-serif;
+}
+      
+.top {
+  top: 50px;
+}
+
+.bottom {
+  top: 260px;
+}
+
+.left {
+  left: 50px;
+}
+
+.right {
+  left: 260px;
+}
+
+.card {
+  position: absolute;
+  
+  width: 200px;
+  height: 200px;
+  
+  text-align: center;
+  font-weight: bold;
+  font-size: 50px;
+  line-height: 180px;
+  color: white;
+  
+  -webkit-perspective: 600px;
+  -webkit-transition: -webkit-transform 1s;
+  -webkit-transform-style: preserve-3d;
+}
+
+.card * {  
+  width: inherit;
+  height: inherit;
+  
+  border: 1px solid black;
+  box-shadow: 1px 3px 3px gray;
+  
+  -webkit-backface-visibility: hidden;
+}
+
+.card:hover {
+  -webkit-transform: rotateY(180deg);
+}
+
+.card.swing {
+  -webkit-transform-origin: right center;
+}
+
+.card .front {
+  position: absolute;
+  background-color: coral;
+}
+
+.card .back {
+  position: absolute;
+  background-color: lightskyblue;
+  -webkit-transform: rotateY(180deg);
+}
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+    </script>
+  </head>
+  <body>
+    <section id="content">
+      <div id="card-flip" class="card top left">
+        <div class="front">
+          Front
+        </div>
+        <div class="back">
+          Back
+        </div>
+      </div>
+      
+      <div id="card-swing" class="card swing bottom left">
+        <div class="front">
+          Front
+        </div>
+        <div class="back">
+          Back
+        </div>
+      </div>
+      
+      <div id="card-diamond" class="card top right">
+        <div class="front">
+          Front
+        </div>
+        <div class="back">
+          Back
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
