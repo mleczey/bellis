@@ -19,7 +19,7 @@ class Downloader implements Callable<String> {
     String result = "";
     try (InputStream is = this.url.openStream()) {
       if (null != is) {
-        result = IOUtils.toString(url, StandardCharsets.UTF_8);
+        result = IOUtils.toString(this.url, StandardCharsets.UTF_8);
       }
     }
     return result;

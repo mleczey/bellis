@@ -1,13 +1,19 @@
 package com.mleczey.concurrent;
 
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +51,7 @@ public class HandlingExecutorResponseExamples {
     this.waitingForFirstSubmitedTask();
     this.waitingForFirstCompletedTask();
     this.listeningForCompletedTask();
+    this.advancedListanbleFuture();
   }
 
   private void waitingForFirstSubmitedTask() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -93,7 +100,7 @@ public class HandlingExecutorResponseExamples {
     ListeningExecutorService listeningService = MoreExecutors.listeningDecorator(service);
     
     for (String element : DATA) {
-      final ListenableFuture<String> future = listeningService.submit(new Downloader(element));
+      ListenableFuture<String> future = listeningService.submit(new Downloader(element));
       Futures.addCallback(future, new FutureCallback<String>() {
         @Override
         public void onSuccess(String result) {
@@ -114,5 +121,83 @@ public class HandlingExecutorResponseExamples {
     Pattern pattern = Pattern.compile("<title>(\\w+)</title>");
     Matcher matcher = pattern.matcher(s);
     return matcher.find() ? matcher.group(1) : StringUtils.EMPTY;
+  }
+  
+  private void advancedListanbleFuture() throws MalformedURLException {
+    this.taskReducing(this.taskMapping(this.taskChaining()));
+  }
+  
+  private List<ListenableFuture<String>> taskChaining() throws MalformedURLException {
+    logger.log(Level.INFO, "Task chaining...");
+    ExecutorService service = Executors.newFixedThreadPool(2);
+    final ListeningExecutorService listeningService = MoreExecutors.listeningDecorator(service);
+    
+    Function<String, String> parseFunction = new Function<String, String>() {
+      @Override
+      public String apply(String input) {
+        logger.log(Level.INFO, "Parsing...");
+        return input.substring(input.indexOf('.'), input.lastIndexOf('.'));
+      }
+    };
+    
+    AsyncFunction<String, String> addDecoration = new AsyncFunction<String, String>() {
+      @Override
+      public ListenableFuture<String> apply(String input) throws Exception {
+        logger.log(Level.INFO, "Decorating...");
+        SettableFuture<String> future = SettableFuture.create();
+        future.set(String.format("###%s###", input));
+        return future;
+      }
+    };
+    
+    List<ListenableFuture<String>> list = new ArrayList<>(10);
+    for (final String element : DATA) {
+      ListenableFuture<String> future = listeningService.submit(new Callable<String>() {
+        @Override
+        public String call() throws Exception {
+          return element;
+        }
+      });
+      ListenableFuture<String> parsedFuture = Futures.transform(future, parseFunction);
+      ListenableFuture<String> addedFuture = Futures.transform(parsedFuture, addDecoration);
+      list.add(addedFuture);
+    }
+    
+    service.shutdown();
+    
+    return list;
+  }
+  
+  private ListenableFuture<List<String>> taskMapping(List<ListenableFuture<String>> list) {
+    logger.log(Level.INFO, "Task mapping...");
+    ListenableFuture<List<String>> futures = Futures.allAsList(list);
+    return futures;
+  }
+  
+  private void taskReducing(ListenableFuture<List<String>> futures) {
+    logger.log(Level.INFO, "Task reducing...");
+    ListenableFuture<String> allHeadersFuture = Futures.transform(futures, new Function<List<String>, String>() {
+      private StringBuilder sb = new StringBuilder("").append("\n");
+      
+      @Override
+      public String apply(List<String> input) {
+        for (String s : input) {
+          this.sb.append(s).append("\n");
+        }
+        return this.sb.toString();
+      }
+    });
+    
+    Futures.addCallback(allHeadersFuture, new FutureCallback<String>() {
+      @Override
+      public void onSuccess(String result) {
+        logger.log(Level.INFO, "Result {0}", result);
+      }
+
+      @Override
+      public void onFailure(Throwable x) {
+        logger.log(Level.SEVERE, "Error.", x);
+      }
+    });
   }
 }
