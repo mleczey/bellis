@@ -1,4 +1,4 @@
-package com.mleczey.pattern;
+package com.mleczey.pattern.creational;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
