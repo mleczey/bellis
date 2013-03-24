@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget>
+  <debug>on</debug>
+  <window>
+    <title>Sample widget</title>
+    <name>main_window</name>
+    <width>500</width>
+    <height>500</height>
+  </window>
+</widget>
