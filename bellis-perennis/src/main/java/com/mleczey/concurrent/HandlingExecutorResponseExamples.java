@@ -47,6 +47,12 @@ public class HandlingExecutorResponseExamples {
     }
   }
   
+  private static String getTitle(String s) {
+    Pattern pattern = Pattern.compile("<title>(\\w+)</title>");
+    Matcher matcher = pattern.matcher(s);
+    return matcher.find() ? matcher.group(1) : StringUtils.EMPTY;
+  }
+
   private void run() throws MalformedURLException, InterruptedException, ExecutionException {
     this.waitingForFirstSubmitedTask();
     this.waitingForFirstCompletedTask();
@@ -115,12 +121,6 @@ public class HandlingExecutorResponseExamples {
     }
     
     service.shutdown();
-  }
-  
-  private static String getTitle(String s) {
-    Pattern pattern = Pattern.compile("<title>(\\w+)</title>");
-    Matcher matcher = pattern.matcher(s);
-    return matcher.find() ? matcher.group(1) : StringUtils.EMPTY;
   }
   
   private void advancedListanbleFuture() throws MalformedURLException {
