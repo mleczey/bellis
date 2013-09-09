@@ -56,7 +56,7 @@ public class CountDownLatchExample {
     @Override
     public void run() {
       try {
-        TimeUnit.SECONDS.sleep(timeout);
+        TimeUnit.SECONDS.sleep(this.timeout);
         logger.log(Level.INFO, "{0} is up.", Thread.currentThread().getName());
         this.latch.countDown();
       } catch (InterruptedException x) {
